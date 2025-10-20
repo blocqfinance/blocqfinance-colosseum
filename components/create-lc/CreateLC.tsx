@@ -48,38 +48,12 @@ const CreateLC = () => {
     const CONTRACT_ADDRESS = "0x3c6Fa322551607a547A1DA8f09DFd3F664F386Bf"
 
     const USDC_ABI = [
-        {
-            "inputs": [
-                { "internalType": "address", "name": "spender", "type": "address" },
-                { "internalType": "uint256", "name": "amount", "type": "uint256" }
-            ],
-            "name": "approve",
-            "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
-            "name": "balanceOf",
-            "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                { "internalType": "address", "name": "owner", "type": "address" },
-                { "internalType": "address", "name": "spender", "type": "address" }
-            ],
-            "name": "allowance",
-            "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-            "stateMutability": "view",
-            "type": "function"
-        }
+       
     ] as const;
 
 
-    const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
-    // React Hook Form setup
+    const USDC_ADDRESS = ""
+
     const {
         register,
         handleSubmit,
@@ -100,63 +74,7 @@ const CreateLC = () => {
 
     const createLC = async (formData: LcFormData) => {
         setLoading(true)
-        if (!signer || !CONTRACT_ADDRESS) {
-            showToast('error', 'Please connect your wallet first');
-            return;
-        }
-
-        if (!formData.amount || !formData.deadline) {
-            console.log('Amount and deadline are required');
-            return;
-        }
-
-        try {
-            // ✅ Convert USDC amount (6 decimals)
-            setLoading(true)
-            const parsedAmount = ethers.parseUnits(formData.amount.toString(), 6);
-
-            // ✅ Convert deadline date to UNIX timestamp (in seconds)
-            const parsedDeadline = Math.floor(new Date(formData.deadline).getTime() / 1000);
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI.abi, signer);
-
-            // ✅ Call the createLC function
-            const tx = await contract.createLC(parsedAmount, parsedDeadline);
-            console.log('Transaction submitted:', tx.hash);
-
-            const receipt = await tx.wait();
-            console.log('Transaction confirmed:', receipt);
-            const iface = new ethers.Interface(CONTRACT_ABI.abi);
-
-            for (const log of receipt.logs) {
-                try {
-                    const parsed = iface.parseLog(log);
-                    if (parsed && parsed.name === "LCCreated") {
-                        const { lcId, amount } = parsed.args;
-                        await createLc(formData, lcId.toString());
-                        setContractAmount(amount.toString())
-                        setBlocqId(lcId.toString())
-                    }
-                } catch {
-                    // ignore unrelated logs
-                }
-            }
-
-
-        } catch (error) {
-            const err = error as Error & { reason?: string };
-            console.error('Error creating LC:', err);
-            if (err.reason) {
-                showToast('error', `Transaction failed: ${err.reason}`);
-                setLoading(false)
-            } else if (err.message?.includes('user rejected')) {
-                showToast('error', 'Transaction rejected by user');
-                setLoading(false)
-            } else {
-                showToast('error', err.message || 'Failed to create LC on blockchain');
-                setLoading(false)
-            }
-        }
-        setLoading(false)
+        
     };
 
 
@@ -208,44 +126,7 @@ const CreateLC = () => {
 
 
     const fundLC = async () => {
-        if (!CONTRACT_ADDRESS) {
-            showToast('error', 'Contract address not provided');
-            return;
-        }
-
-        try {
-            setLoading(true)
-            // Parse the raw amount directly (it's already in the right format)
-            const usdcAmount = BigInt(contractAmount);  // ✅ Convert string back to BigInt
-            const usdcContract = new ethers.Contract(USDC_ADDRESS, USDC_ABI, signer);
-            const userBalance = await usdcContract.balanceOf(walletAddress);
-            console.log('User USDC balance:', ethers.formatUnits(userBalance, 6));
-
-            if (userBalance < usdcAmount) {
-                throw new Error(`Insufficient USDC balance.`);
-            }
-            // Reset and approve
-            const resetTx = await usdcContract.approve(CONTRACT_ADDRESS, 0);
-            await resetTx.wait();
-
-            const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, usdcAmount);
-            await approveTx.wait();
-
-            console.log('Approval confirmed');
-            // Fund
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI.abi, signer);
-            const fundTx = await contract.fund(blocqId, {
-                gasLimit: 200000 // Set a manual gas limit
-            });
-            const receipt = await fundTx.wait();
-            console.log('reciept', receipt)
-            showToast('success', 'LC funded successfully!');
-            updateLc();
-        } catch (error) {
-            const err = error as Error;
-            console.error('Error funding LC:', err);
-            showToast('error', err.message || 'Failed to fund LC');
-        }
+       
     };
 
     const updateLc = async () => {
