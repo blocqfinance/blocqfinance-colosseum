@@ -1,0 +1,65 @@
+@use '../../styles/variables.scss' as *;
+
+.login {
+  height: 100vh;
+  display: flex;
+  justify-content: space-between;
+
+  &__left {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #ffffff;
+    padding-top: 50px;
+
+    .left_inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      .form {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 100px;
+
+        .image{
+          display: flex;
+          justify-content: center;
+          margin-top: 70px;
+        }
+
+        > h2 {
+          font-size: 35px;
+          color: $black;
+          font-family: $font-family;
+          text-align: center;
+          margin-top: 40px;
+        }
+        > p {
+          font-size: 20px;
+          color: $black;
+          font-family: $font-family;
+          margin-top: 10px;
+          margin-bottom: 50px;
+          text-align: center;
+        }
+        > div {
+          margin-bottom: 30px;
+          >input{
+            width: 487px;
+          }
+        }
+      }
+      .button {
+        font-size: 20px;
+        font-family: $font-family-bold;
+        width: 222px;
+        color: #ffffff;
+      }
+    }
+  }
+}

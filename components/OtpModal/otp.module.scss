@@ -1,0 +1,99 @@
+@use '../../styles/variables.scss' as *;
+ 
+.otp{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    z-index: 999;
+    width: 435px;
+    border-radius: 16px;
+    background: #FFF;
+    box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+    padding: 24px;
+    padding-bottom: 0;
+    font-family: $font-family;
+
+    &__header{
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        background: #FFF;
+        border-radius: 16px 16px 0px 0px;
+
+        h6{
+            color: #012622;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+        }
+    }
+
+    &__main{
+        form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 32px;
+
+            input {
+              border-radius: 10px;
+              border: 2px solid #9d9d9d;
+              box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+              width: 59px;
+              height: 56px;
+              padding: 0.5rem;
+              background-color: inherit;
+              color: #012622;
+              font-size: 42px;
+              font-style: normal;
+              font-weight: 500;
+              line-height: normal;
+              margin-right: 0.5rem;
+              text-align: center;
+            }
+            input:focus {
+                border: 2px solid #435AD7;
+              box-shadow: 0px 0px 0px 4px #01262234;
+            }
+          }
+
+
+        p{
+            color: #667085;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            // width: 504px;
+            margin: 0 auto;
+            margin-top: 10px;
+
+        }
+
+        form{
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            // margin: 1.5rem 0rem;
+        }
+
+        h6{
+            text-align: center;
+            color: #667085;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            margin-bottom: 32px;
+            margin-top: 32px;
+
+            span{
+                color: #012622;
+            }
+        }
+    }
+}
+

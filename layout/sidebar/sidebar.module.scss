@@ -1,0 +1,106 @@
+@use '../../styles/variables.scss' as *;
+
+.sidebar{
+    background-color: #101217;
+    border: 1px solid #EBEBEB;
+    width: 258px;
+    height: 666px;
+    border-radius: 26px;
+    padding: 16px;
+    padding-top: 24px;
+    position: fixed;
+    left: 16px;
+    font-family: $font-inter;
+
+    .footercover{
+        position: absolute;
+        bottom: 0;
+        border-top: 1px solid #EBEBEB;
+        padding: 11px;
+        padding-bottom: 22px;
+    }
+
+
+    .footer{
+        background-color: #FFFFFF;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+
+        &>div{
+            margin-left: 12px;
+        }
+
+        h4{
+            font-weight: 500;
+            font-size: 14px;
+            color: #171717;
+            display: flex;
+            align-items: center;
+
+            img{
+                margin-left: 5px;
+            }
+       
+        }
+
+        p{
+            font-weight: 400;
+            font-size: 12px;
+            color: #5C5C5C;
+        }
+    }
+
+    &__header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 50px;
+    }
+
+    &__menu{
+        h4{
+            font-weight: 500;
+            font-size: 12px;
+            color: #A3A3A3;
+            margin-bottom: 8px;
+        }
+
+      
+
+        .link{
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 4px;
+
+            img{
+                margin-right: 8px;
+            }
+            p{
+                font-weight: 500;
+                font-size: 14px;
+                color: #A3A3A3;
+            }
+        }
+
+        .active{
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+
+            img{
+                margin-right: 8px;
+            }
+            p{
+                font-weight: 500;
+                font-size: 14px;
+                color: #171717;
+            }
+        }
+    }
+}

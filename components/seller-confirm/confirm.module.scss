@@ -1,0 +1,158 @@
+@use '../../styles/variables.scss' as *;
+
+.confirm {
+  background-color: #ffffff;
+  width: 822px;
+  padding: 16px;
+  border-radius: 12px;
+
+  .header {
+    > h4 {
+      font-family: $font-inter;
+      font-size: 16px;
+      font-weight: 600;
+      color: #000;
+      line-height: 24px;
+      letter-spacing: -1.5%;
+    }
+    > p {
+      font-family: $font-inter;
+      font-size: 14px;
+      font-weight: 400;
+      color: #5c5c5c;
+    }
+  }
+  .connect_success {
+    background-color: #e0faec;
+    padding: 14px 14px 16px 14px;
+    border: 1px solid #1fc16b;
+    border-radius: 12px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > div {
+      > h4 {
+        font-family: $font-inter;
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
+        line-height: 24px;
+        letter-spacing: -1.5%;
+      }
+      > p {
+        color: #1fc16b;
+        font-family: $font-inter;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+    }
+  }
+
+  .address {
+    margin-top: 25px;
+    > h4 {
+      font-family: $font-inter;
+      font-size: 16px;
+      font-weight: 600;
+      color: #000;
+      line-height: 24px;
+      letter-spacing: -1.5%;
+
+      >span{
+        color: red
+      }
+    }
+
+    .container {
+      margin-top: 4px;
+      border: 1px solid #ebebeb;
+      padding: 10px 10px 10px 12px;
+      background-color: #ffffff;
+      color: #171717;
+      border-radius: 10px;
+    }
+  }
+
+  .info{
+    display: flex;
+    gap: 5px;
+    font-size: 12px;
+    color: #5C5C5C;
+    margin-top: 2px;
+  }
+
+  .info_orange{
+    background-color: #FFF3EB;
+    border-radius: 8px;
+     display: flex;
+     align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #171717;
+    margin-top: 20px;
+    padding: 8px;
+  }
+
+  .accept{
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: #5C5C5C;
+    margin-top: 20px;
+
+    .checkbox{
+      background-color: #171717;
+      border-radius: 5px;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    >div{
+      > h4 {
+      font-family: $font-inter;
+      font-size: 14px;
+      font-weight: 500;
+      color: #000;
+      line-height: 24px;
+      letter-spacing: -1.5%;
+    }
+    > p {
+      font-family: $font-inter;
+      font-size: 14px;
+      font-weight: 400;
+      color: #5c5c5c;
+            letter-spacing: -0.6%;
+    }
+    }
+  }
+
+    .confirm_btn {
+    background-color: #171717;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    width: 100%;
+    font-family: $font-inter;
+    margin-top: 25px;
+    cursor: pointer;
+
+    >span{
+      margin-left: 10px;
+      margin-bottom: 3px;
+    }
+  }
+}
