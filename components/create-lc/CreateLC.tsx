@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './create-lc.module.scss';
 import Image from 'next/image';
 import FundLC from '../fund-lc/FundLC';
@@ -13,6 +13,7 @@ import Backdrop from '../backdrop/Backdrop';
 import CONTRACT_ABI from '../../app/utils/LetterOfCredit.json'
 import Link from 'next/link';
 import { BlocqSpinnerPulse } from '../Loader/Loader';
+import {useSolProvider} from "../../solana/lcsolprovider";
 
 interface LcFormData {
     amount: string;
@@ -43,7 +44,12 @@ const CreateLC = () => {
     const [isConnected, setIsConnected] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [blocqId, setBlocqId] = useState('')
-    const [contractAmount, setContractAmount] = useState('')
+    const [contractAmount, setContractAmount] = useState('');
+    const data2 = useSolProvider();
+    if (!data2) return;
+    useEffect(()=>{
+        console.log(data2);
+    },[data2]);
 
     const CONTRACT_ADDRESS = "0x3c6Fa322551607a547A1DA8f09DFd3F664F386Bf"
 
