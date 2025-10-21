@@ -2,13 +2,14 @@
 
 import React, { createContext, useContext } from "react";
 import { SolanaProvider } from "./solana-provider";
+import LCAnchorContext from "./anchor-provider";
 
 interface LCSPParams {
     children: React.ReactNode;
 }
 
 interface SolProviderProps {
-    name: string
+
 }
 
 const SolProvider = createContext<SolProviderProps | undefined>(undefined);
@@ -19,14 +20,16 @@ export const useSolProvider = () => {
 };
 
 const LCSolProvider = ({ children }: LCSPParams) => {
-    const name = "dd"
+
     return (
-        <SolProvider.Provider value={{ name }}>
+        <SolProvider.Provider value={{}}>
             <SolanaProvider>
-                {children}
+                <LCAnchorContext>
+                    {children}
+                </LCAnchorContext>
             </SolanaProvider>
         </SolProvider.Provider>
-    )
+    );
 };
 
 export default LCSolProvider;

@@ -15,8 +15,9 @@ import Link from 'next/link';
 import { BlocqSpinnerPulse } from '../Loader/Loader';
 import { useSolProvider } from "../../solana/lcsolprovider";
 import SafeWalletButton from '@/solana/safe-wallet';
-
-
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import * as web3 from "@solana/web3.js";
+import {useLCAnchorContext} from "../../solana/anchor-provider";
 
 interface LcFormData {
     amount: string;
@@ -36,6 +37,11 @@ interface LcData {
 }
 
 const CreateLC = () => {
+
+    const { publicKey } = useWallet();
+    console.log("pubkey", publicKey)
+    const { connection } = useConnection();
+    console.log("connection", connection);
     const [activeStep, setActiveStep] = useState<number>(1);
     const { user } = useAuthStore()
     const [data, setData] = useState<LcData | null>(null)
@@ -48,7 +54,7 @@ const CreateLC = () => {
     const [showModal, setShowModal] = useState(false)
     const [blocqId, setBlocqId] = useState('')
     const [contractAmount, setContractAmount] = useState('');
-    const data2 = useSolProvider();
+    const data2 = useLCAnchorContext();
     if (!data2) return;
     useEffect(() => {
         console.log(data2);
@@ -82,6 +88,7 @@ const CreateLC = () => {
 
 
     const createLC = async (formData: LcFormData) => {
+        console.log(formData);
         setLoading(true)
 
     };
@@ -165,7 +172,7 @@ const CreateLC = () => {
 
     return (
         <>
-           
+
 
 
             {loading && (
@@ -342,9 +349,13 @@ const CreateLC = () => {
 
 
                                     </div>
+
                                     <div style={{ marginTop: '20px' }}>
                                         <button disabled={loading} onClick={handleSubmit(createLC)} className={styles.create_lc_button}>
-                                            {loading ? <div className='loader'></div> : "Create LC"}
+                                            {loading ? <div className='loader'></div> :
+                                                (publicKey ? "Create LC" :
+                                                    <SafeWalletButton></SafeWalletButton>
+                                                )}
                                         </button>
                                     </div>
                                 </form>
