@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
-import { ClusterProvider } from "./cluster-data-access";
 import { SolanaProvider } from "./solana-provider";
 
 interface LCSPParams {
@@ -23,11 +22,9 @@ const LCSolProvider = ({ children }: LCSPParams) => {
     const name = "dd"
     return (
         <SolProvider.Provider value={{ name }}>
-            <ClusterProvider>
-                <SolanaProvider>
-                    {children}
-                </SolanaProvider>
-            </ClusterProvider>
+            <SolanaProvider>
+                {children}
+            </SolanaProvider>
         </SolProvider.Provider>
     )
 };

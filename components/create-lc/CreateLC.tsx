@@ -13,7 +13,10 @@ import Backdrop from '../backdrop/Backdrop';
 import CONTRACT_ABI from '../../app/utils/LetterOfCredit.json'
 import Link from 'next/link';
 import { BlocqSpinnerPulse } from '../Loader/Loader';
-import {useSolProvider} from "../../solana/lcsolprovider";
+import { useSolProvider } from "../../solana/lcsolprovider";
+import SafeWalletButton from '@/solana/safe-wallet';
+
+
 
 interface LcFormData {
     amount: string;
@@ -47,14 +50,14 @@ const CreateLC = () => {
     const [contractAmount, setContractAmount] = useState('');
     const data2 = useSolProvider();
     if (!data2) return;
-    useEffect(()=>{
+    useEffect(() => {
         console.log(data2);
-    },[data2]);
+    }, [data2]);
 
     const CONTRACT_ADDRESS = "0x3c6Fa322551607a547A1DA8f09DFd3F664F386Bf"
 
     const USDC_ABI = [
-       
+
     ] as const;
 
 
@@ -80,7 +83,7 @@ const CreateLC = () => {
 
     const createLC = async (formData: LcFormData) => {
         setLoading(true)
-        
+
     };
 
 
@@ -132,7 +135,7 @@ const CreateLC = () => {
 
 
     const fundLC = async () => {
-       
+
     };
 
     const updateLc = async () => {
@@ -162,22 +165,12 @@ const CreateLC = () => {
 
     return (
         <>
-            {showModal &&
-                <Backdrop>
-                    <Wallet
-                        setWalletAddress={setWalletAddress}
-                        setIsConnected={setIsConnected}
-                        setSigner={setSigner}
-                        setProvider={() => { }}
-                        setShowModal={setShowModal}
-                    />
-                </Backdrop>
-            }
+           
 
 
             {loading && (
                 <Backdrop>
-                <BlocqSpinnerPulse />
+                    <BlocqSpinnerPulse />
                 </Backdrop>
             )}
             <div className={styles.create}>
@@ -188,8 +181,7 @@ const CreateLC = () => {
                     </div>
 
                     <div className={styles.walletbtn}>
-                        <button onClick={() => !isConnected && setShowModal(true)}>{isConnected ? formatAddress(walletAddress) : 'Connect Wallet'}</button>
-                        {isConnected && <button onClick={disconnectWallet} className={styles.disconnect}>Disconnect</button>}
+                        <SafeWalletButton></SafeWalletButton>
                     </div>
                 </div>
                 <div className={styles.create__body}>
@@ -211,7 +203,7 @@ const CreateLC = () => {
                         <div className={styles.lc_step} style={{ marginLeft: '15px' }}>
                             <div>
                                 <div className={styles.circle}>3</div>
-                                <p  className={`${activeStep === 3 ? styles.active : ''}`}>Send Invitation</p>
+                                <p className={`${activeStep === 3 ? styles.active : ''}`}>Send Invitation</p>
                             </div>
                             {/* <Image src="/arrow-right-line.svg" width={20} height={20} alt="arrow right" /> */}
                         </div>
