@@ -1,13 +1,21 @@
 import React from 'react';
 import styles from './header.module.scss';
 import Image from 'next/image';
+import SafeWalletButton from '@/solana/safe-wallet';
+import { useWallet } from "@solana/wallet-adapter-react";
 
-
-interface seller {
-    seller: string | undefined
+interface HeaderProps {
+    seller: string | undefined;
+    otpChecked: boolean
 }
 
-const Header = ({seller}:seller) => {
+interface HeaderParams{
+    params : HeaderProps
+}
+
+const Header = ({ params }: HeaderParams) => {
+    const seller = params?.seller;
+    const { publicKey } = useWallet();
     return (
         <>
             <div className={styles.header}>
@@ -18,11 +26,19 @@ const Header = ({seller}:seller) => {
                     <div className={styles.notification}>
                         <Image src="/notification-icon.svg" width={15} height={15} alt="" />
                     </div>
-                    <div className={styles.user}>
-                        <Image src="/avatar.svg" width={32} height={32} alt="" />
-                        <p>{seller}</p>
-                        <Image src="/arrow-down-filled.svg" width={9} height={4} alt="" />
-                    </div>
+
+                    {
+                        publicKey && params?.otpChecked ?
+                            <div className={styles.user}>
+                                <SafeWalletButton></SafeWalletButton>
+                            </div>
+                            :
+                            <div className={styles.user}>
+                                <Image src="/avatar.svg" width={32} height={32} alt="" />
+                                <p>{seller}</p>
+                                <Image src="/arrow-down-filled.svg" width={9} height={4} alt="" />
+                            </div>
+                    }
                 </div>
             </div>
             <div className={styles.bottom}>
