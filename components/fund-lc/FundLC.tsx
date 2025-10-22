@@ -20,7 +20,7 @@ interface FundLCProps {
 
 const FundLC: React.FC<FundLCProps> = ({ activeStep, fundLc, setActiveStep, data }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
-
+console.log(data);
   return (
     <>
       <div className={styles.fund}>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from './create-lc.module.scss';
 import Image from 'next/image';
 import FundLC from '../fund-lc/FundLC';
@@ -13,13 +13,13 @@ import Backdrop from '../backdrop/Backdrop';
 import CONTRACT_ABI from '../../app/utils/LetterOfCredit.json'
 import Link from 'next/link';
 import { BlocqSpinnerPulse } from '../Loader/Loader';
-import { useSolProvider } from "../../solana/lcsolprovider";
-import SafeWalletButton from '@/solana/safe-wallet';
+// sol integration
+import SafeWalletButton from '../../solana/safe-wallet';
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import * as web3 from "@solana/web3.js";
-import {useLCAnchorContext} from "../../solana/anchor-provider";
+import { createLCCall, fundLCCall } from "../../solana/letter-of-credit-calls";
+import { useLCAnchorContext } from "../../solana/anchor-provider"
 
-interface LcFormData {
+export interface LcFormData {
     amount: string;
     sellerEmail: string;
     sellerCompany: string;
@@ -34,14 +34,12 @@ interface LcData {
     sellerEmail: string;
     sellerCompany: string;
     shippingDeadline: string;
+    blocqId : string;
 }
 
 const CreateLC = () => {
 
     const { publicKey } = useWallet();
-    console.log("pubkey", publicKey)
-    const { connection } = useConnection();
-    console.log("connection", connection);
     const [activeStep, setActiveStep] = useState<number>(1);
     const { user } = useAuthStore()
     const [data, setData] = useState<LcData | null>(null)
@@ -54,11 +52,9 @@ const CreateLC = () => {
     const [showModal, setShowModal] = useState(false)
     const [blocqId, setBlocqId] = useState('')
     const [contractAmount, setContractAmount] = useState('');
-    const data2 = useLCAnchorContext();
-    if (!data2) return;
-    useEffect(() => {
-        console.log(data2);
-    }, [data2]);
+    const lcAnchorContext = useLCAnchorContext();
+    if(!lcAnchorContext) return;
+
 
     const CONTRACT_ADDRESS = "0x3c6Fa322551607a547A1DA8f09DFd3F664F386Bf"
 
@@ -88,9 +84,13 @@ const CreateLC = () => {
 
 
     const createLC = async (formData: LcFormData) => {
-        console.log(formData);
-        setLoading(true)
+        setLoading(true);
+        
+        const lcId = await createLCCall(formData, lcAnchorContext);
 
+        console.log('Form data to send', formData);
+        console.log("LC ID to send", lcId);
+        if (lcId > 0) createLc(formData, lcId.toString());
     };
 
 
@@ -104,7 +104,9 @@ const CreateLC = () => {
 
 
     const createLc = async (formData: LcFormData, id: string) => {
-        setLoading(true)
+        console.log("Creating LC with id ", id);
+        setLoading(true);
+        console.log("Creating with public key",publicKey?.toString());
         const mainData = {
             "buyer": user?.id,
             "sellerEmail": formData.sellerEmail,
@@ -142,14 +144,21 @@ const CreateLC = () => {
 
 
     const fundLC = async () => {
-
+        if(!data?.blocqId) return;
+        const isFunded = await fundLCCall(Number(data?.blocqId), lcAnchorContext);
+        if(isFunded){
+            await updateLc();
+        }else{
+            alert("Failed to fund lc");
+        }
     };
 
     const updateLc = async () => {
         setLoading(true)
+        console.log("Updating with buyer address", publicKey?.toString())
         const mainData = {
             "trigger": "fundLC",
-            "buyerWalletAddress": walletAddress
+            "buyerWalletAddress": publicKey?.toString()
         }
         console.log(data)
         if (!data?.lcId) return;

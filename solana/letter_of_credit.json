@@ -773,8 +773,7 @@
             "seeds": [
               {
                 "kind": "account",
-                "path": "letter_credit.seller",
-                "account": "LetterCredit"
+                "path": "seller"
               },
               {
                 "kind": "const",
@@ -856,6 +855,9 @@
               ]
             }
           }
+        },
+        {
+          "name": "seller"
         },
         {
           "name": "mint"

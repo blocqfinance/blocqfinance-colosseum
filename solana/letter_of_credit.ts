@@ -1,3 +1,9 @@
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/letter_of_credit.json`.
+ */
 export type LetterOfCredit = {
   "address": "5H5Az3WbtrW52ZJdjvsgY1Gnzaorvsp1AFpf4oMz3W1S",
   "metadata": {
@@ -773,8 +779,7 @@ export type LetterOfCredit = {
             "seeds": [
               {
                 "kind": "account",
-                "path": "letter_credit.seller",
-                "account": "letterCredit"
+                "path": "seller"
               },
               {
                 "kind": "const",
@@ -856,6 +861,9 @@ export type LetterOfCredit = {
               ]
             }
           }
+        },
+        {
+          "name": "seller"
         },
         {
           "name": "mint"
