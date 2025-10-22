@@ -13,8 +13,13 @@ import Backdrop from '../backdrop/Backdrop';
 import CONTRACT_ABI from '../../app/utils/LetterOfCredit.json'
 import Link from 'next/link';
 import { BlocqSpinnerPulse } from '../Loader/Loader';
+// sol integration
+import SafeWalletButton from '../../solana/safe-wallet';
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { createLCCall, fundLCCall } from "../../solana/letter-of-credit-calls";
+import { useLCAnchorContext } from "../../solana/anchor-provider"
 
-interface LcFormData {
+export interface LcFormData {
     amount: string;
     sellerEmail: string;
     sellerCompany: string;
@@ -29,9 +34,12 @@ interface LcData {
     sellerEmail: string;
     sellerCompany: string;
     shippingDeadline: string;
+    blocqId : string;
 }
 
 const CreateLC = () => {
+
+    const { publicKey } = useWallet();
     const [activeStep, setActiveStep] = useState<number>(1);
     const { user } = useAuthStore()
     const [data, setData] = useState<LcData | null>(null)
@@ -43,12 +51,15 @@ const CreateLC = () => {
     const [isConnected, setIsConnected] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [blocqId, setBlocqId] = useState('')
-    const [contractAmount, setContractAmount] = useState('')
+    const [contractAmount, setContractAmount] = useState('');
+    const lcAnchorContext = useLCAnchorContext();
+    if(!lcAnchorContext) return;
+
 
     const CONTRACT_ADDRESS = "0x3c6Fa322551607a547A1DA8f09DFd3F664F386Bf"
 
     const USDC_ABI = [
-       
+
     ] as const;
 
 
@@ -73,8 +84,13 @@ const CreateLC = () => {
 
 
     const createLC = async (formData: LcFormData) => {
-        setLoading(true)
+        setLoading(true);
         
+        const lcId = await createLCCall(formData, lcAnchorContext);
+
+        console.log('Form data to send', formData);
+        console.log("LC ID to send", lcId);
+        if (lcId > 0) createLc(formData, lcId.toString());
     };
 
 
@@ -88,7 +104,9 @@ const CreateLC = () => {
 
 
     const createLc = async (formData: LcFormData, id: string) => {
-        setLoading(true)
+        console.log("Creating LC with id ", id);
+        setLoading(true);
+        console.log("Creating with public key",publicKey?.toString());
         const mainData = {
             "buyer": user?.id,
             "sellerEmail": formData.sellerEmail,
@@ -126,14 +144,21 @@ const CreateLC = () => {
 
 
     const fundLC = async () => {
-       
+        if(!data?.blocqId) return;
+        const isFunded = await fundLCCall(Number(data?.blocqId), lcAnchorContext);
+        if(isFunded){
+            await updateLc();
+        }else{
+            alert("Failed to fund lc");
+        }
     };
 
     const updateLc = async () => {
         setLoading(true)
+        console.log("Updating with buyer address", publicKey?.toString())
         const mainData = {
             "trigger": "fundLC",
-            "buyerWalletAddress": walletAddress
+            "buyerWalletAddress": publicKey?.toString()
         }
         console.log(data)
         if (!data?.lcId) return;
@@ -156,22 +181,12 @@ const CreateLC = () => {
 
     return (
         <>
-            {showModal &&
-                <Backdrop>
-                    <Wallet
-                        setWalletAddress={setWalletAddress}
-                        setIsConnected={setIsConnected}
-                        setSigner={setSigner}
-                        setProvider={() => { }}
-                        setShowModal={setShowModal}
-                    />
-                </Backdrop>
-            }
+
 
 
             {loading && (
                 <Backdrop>
-                <BlocqSpinnerPulse />
+                    <BlocqSpinnerPulse />
                 </Backdrop>
             )}
             <div className={styles.create}>
@@ -182,8 +197,7 @@ const CreateLC = () => {
                     </div>
 
                     <div className={styles.walletbtn}>
-                        <button onClick={() => !isConnected && setShowModal(true)}>{isConnected ? formatAddress(walletAddress) : 'Connect Wallet'}</button>
-                        {isConnected && <button onClick={disconnectWallet} className={styles.disconnect}>Disconnect</button>}
+                        <SafeWalletButton></SafeWalletButton>
                     </div>
                 </div>
                 <div className={styles.create__body}>
@@ -205,7 +219,7 @@ const CreateLC = () => {
                         <div className={styles.lc_step} style={{ marginLeft: '15px' }}>
                             <div>
                                 <div className={styles.circle}>3</div>
-                                <p  className={`${activeStep === 3 ? styles.active : ''}`}>Send Invitation</p>
+                                <p className={`${activeStep === 3 ? styles.active : ''}`}>Send Invitation</p>
                             </div>
                             {/* <Image src="/arrow-right-line.svg" width={20} height={20} alt="arrow right" /> */}
                         </div>
@@ -344,9 +358,13 @@ const CreateLC = () => {
 
 
                                     </div>
+
                                     <div style={{ marginTop: '20px' }}>
                                         <button disabled={loading} onClick={handleSubmit(createLC)} className={styles.create_lc_button}>
-                                            {loading ? <div className='loader'></div> : "Create LC"}
+                                            {loading ? <div className='loader'></div> :
+                                                (publicKey ? "Create LC" :
+                                                    <SafeWalletButton></SafeWalletButton>
+                                                )}
                                         </button>
                                     </div>
                                 </form>

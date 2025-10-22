@@ -4,6 +4,7 @@ import "./globals.css";
 import './form.css'
 import { ToastProvider } from "../components/toast/ToastContext";
 import ClientLayout from "./ClientLayout";
+import LCSolProvider from "../solana/lcsolprovider";
 
 export const metadata: Metadata = {
   title: "Blocq Finance",
@@ -18,11 +19,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ClientLayout>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </ClientLayout>
+        <LCSolProvider>
+          <ClientLayout>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </ClientLayout>
+        </LCSolProvider>
       </body>
     </html>
   );

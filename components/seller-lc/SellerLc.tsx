@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import styles from './lc.module.scss'
 import { ReactSVG } from 'react-svg'
 import Progress from '../Progress/Progress'
@@ -16,6 +16,12 @@ import Otp from '../OtpModal/Otp'
 import Wallet from '../Wallet/seller'
 import { useToast } from '../toast/ToastContext'
 import { DateTime } from 'luxon'
+
+import { useWallet } from "@solana/wallet-adapter-react";
+import SafeWalletButton from '@/solana/safe-wallet'
+import { useLCAnchorContext } from "../../solana/anchor-provider";
+import { registerSellerCall } from "../../solana/letter-of-credit-calls";
+import {updateSellerLc} from "../../libs/api/collections/seller";
 
 type Buyer = {
     companyName: string;
@@ -35,6 +41,7 @@ type LcResponse = {
     blocqId: string;
     sellerCompany: string;
     activityLogs: [];
+    buyerWalletAddress: string;
 };
 
 const SellerLc = () => {
@@ -43,11 +50,15 @@ const SellerLc = () => {
     const [response, setResponse] = useState<LcResponse | null>(null);
     const { id } = useParams()
     const [showOtp, setShowOtp] = useState(false)
-    const [showModal, setShowModal] = useState(false)
     const { showToast } = useToast()
     const { data, error } = useSWR(`public/lc/${id}`, fetchLC)
     const [checked, setChecked] = useState(false);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+
+    const { publicKey } = useWallet();
+    const [otpChecked, setOtpChecked] = useState<boolean>(false);
+    const lcAnchorContext = useLCAnchorContext();
+    if (!lcAnchorContext) return;
 
     useEffect(() => {
         setResponse(data?.data)
@@ -71,12 +82,14 @@ const SellerLc = () => {
         const data = {
             "email": response?.sellerEmail
         }
-        const responseData = await sendOtp(data)
+        const responseData = await sendOtp(data);
+        console.log(data);
         if (responseData.statusCode === 201 || responseData.statusCode === 200) {
             showToast('sucess', responseData.message)
-            setShowOtp(true)
+            setShowOtp(true);
             setLoading(false)
         } else {
+            console.log(responseData.message);
             showToast('error', responseData.message)
             setLoading(false)
         }
@@ -90,8 +103,8 @@ const SellerLc = () => {
         }
         const responseData = await verifyOtpCall(data)
         if (responseData.statusCode === 201 || responseData.statusCode === 200) {
-            setShowOtp(false)
-            setShowModal(true)
+            setShowOtp(false);
+            setOtpChecked(true);
             showToast('sucess', responseData.message)
             setLoading(false)
         } else {
@@ -100,11 +113,51 @@ const SellerLc = () => {
         }
     }
 
-    const close = ()=>{
+    const close = () => {
         setShowOtp(false)
-        setShowModal(false)
     }
 
+    // trigger register
+    const triggerRegister = useCallback(() => {
+        (async function () {
+            console.log(response);
+            // register on block chain
+            const regSeller = await registerSellerCall(lcAnchorContext, response?.buyerWalletAddress, response?.blocqId);
+
+            // if successful, update backend
+            if (regSeller) {
+                alert("Registered on block chain");
+                updateLc();
+            } else {
+                alert("Faliled to register seller on block chain");
+            }
+        })();
+    }, [lcAnchorContext, response]);
+
+    const updateLc = async () => {
+        console.log("ID IS", id);
+        if (!id) {
+            console.error('No LC ID provided');
+            return;
+        }
+        const data = {
+            "trigger": "sellerRegistered",
+            "sellerWalletAddress": publicKey?.toString(),
+            "termsAcceptedBySeller": true
+        }
+        console.log(data);
+        try {
+            const response = await updateSellerLc(id.toString(), data);
+            if (response.statusCode === 201 || response.statusCode === 200) {
+                console.log(response);
+                showToast('success', 'Seller registration completed');
+            } else {
+                console.log(response);
+            }
+        } catch (error) {
+            console.error('Error updating LC:', error);
+        }
+    }
 
 
     return (
@@ -112,12 +165,8 @@ const SellerLc = () => {
             {showOtp && <Backdrop>
                 <Otp close={close} showOtp={showOtp} setShowOtp={setShowOtp} onSubmit={verifyOtp} email={response?.sellerEmail} />
             </Backdrop>}
-
-            {showModal && <Backdrop>
-                <Wallet close={close} blocqId={response?.blocqId} id={response?.lcId} />
-            </Backdrop>}
             <div className={styles.lcm}>
-                <Header seller={response?.sellerCompany} />
+                <Header params={{ seller: response?.sellerCompany, otpChecked: otpChecked }} />
 
                 {activeStep === 2 && (
                     <div className={styles.options}>
@@ -191,12 +240,34 @@ const SellerLc = () => {
                                             <p>By accepting, you agree to fulfill all requirements and upload necessary documents.</p>
                                         </div>
                                     </div>
-                                    <button className={styles.confirm_btn} onClick={() => callOtp()}>
-                                        {loading ? <div className='loader'></div> : "Connect Wallet and confirm participation"}
-                                        {/* <span>
+                                    {
+                                        !otpChecked
+                                        &&
+                                        <button className={styles.confirm_btn} onClick={() => callOtp()}>
+                                            {loading ? <div className='loader'></div> :
+
+                                                "Connect wallet and confirm participation"
+                                            }
+                                            {/* <span>
                                         <Image src="/arrow-r-white" width={12} height={12} alt="" />
                                     </span> */}
-                                    </button>
+                                        </button>
+                                    }
+
+                                    {
+                                        otpChecked && !publicKey &&
+                                        <div style={{ display: "flex", justifyContent: "center" }}>
+                                            <SafeWalletButton></SafeWalletButton>
+                                        </div>
+                                    }
+
+                                    {
+                                        otpChecked && publicKey &&
+                                        publicKey &&
+                                        <button className={styles.confirm_btn} onClick={triggerRegister}>
+                                            Confirm participation
+                                        </button>
+                                    }
                                 </div>
                             </div>
                         </div>
