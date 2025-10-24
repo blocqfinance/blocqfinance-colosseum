@@ -178,6 +178,8 @@ const CreateLC = () => {
     const select = watch('docType')
     console.log(select)
 
+    // showToast('success', 'LC sent to seller');
+
 
     return (
         <>
