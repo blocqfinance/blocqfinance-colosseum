@@ -13,7 +13,6 @@ import useSWR from 'swr'
 import { fetchLC, sendOtp, verifyOtpCall } from '@/libs/api/collections/seller'
 import Backdrop from '../backdrop/Backdrop'
 import Otp from '../OtpModal/Otp'
-import Wallet from '../Wallet/seller'
 import { useToast } from '../toast/ToastContext'
 import { DateTime } from 'luxon'
 
@@ -58,7 +57,7 @@ const SellerLc = () => {
     const { publicKey } = useWallet();
     const [otpChecked, setOtpChecked] = useState<boolean>(false);
     const lcAnchorContext = useLCAnchorContext();
-    if (!lcAnchorContext) return;
+   
 
     useEffect(() => {
         setResponse(data?.data)
@@ -69,6 +68,7 @@ const SellerLc = () => {
         }
     }, [data, error]);
 
+
     const terms = [
         { id: 1, term: "Goods must be delivered within 30 days of LC activation" },
         { id: 2, term: "All items must meet specified quality standards as per attached specifications" },
@@ -76,6 +76,27 @@ const SellerLc = () => {
         { id: 4, term: "Payment released upon successful document verification and delivery confirmation" },
         { id: 5, term: "All documents must be uploaded within 48 hours of shipment" },
     ]
+
+        // trigger register
+        const triggerRegister = useCallback(() => {
+            if (!lcAnchorContext) {
+                return;
+            }
+
+            (async function () {
+                console.log(response);
+                // register on block chain
+                const regSeller = await registerSellerCall(lcAnchorContext, response?.buyerWalletAddress, response?.blocqId);
+    
+                // if successful, update backend
+                if (regSeller) {
+                    alert("Registered on block chain");
+                    updateLc();
+                } else {
+                    alert("Faliled to register seller on block chain");
+                }
+            })();
+        }, [lcAnchorContext, response]);
 
     const callOtp = async () => {
         setLoading(true)
@@ -117,22 +138,7 @@ const SellerLc = () => {
         setShowOtp(false)
     }
 
-    // trigger register
-    const triggerRegister = useCallback(() => {
-        (async function () {
-            console.log(response);
-            // register on block chain
-            const regSeller = await registerSellerCall(lcAnchorContext, response?.buyerWalletAddress, response?.blocqId);
 
-            // if successful, update backend
-            if (regSeller) {
-                alert("Registered on block chain");
-                updateLc();
-            } else {
-                alert("Faliled to register seller on block chain");
-            }
-        })();
-    }, [lcAnchorContext, response]);
 
     const updateLc = async () => {
         console.log("ID IS", id);

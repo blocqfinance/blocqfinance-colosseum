@@ -3,12 +3,10 @@ import React, { useState } from 'react';
 import styles from './create-lc.module.scss';
 import Image from 'next/image';
 import FundLC from '../fund-lc/FundLC';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { createLcFunction, updateLcAsFunded } from '@/libs/api/collections/lc';
 import useAuthStore from '@/store/AuthStore';
 import { useToast } from '../toast/ToastContext';
-import { ethers } from 'ethers';
-import Wallet from '../Wallet/ConnectWalletModal';
 import Backdrop from '../backdrop/Backdrop';
 import CONTRACT_ABI from '../../app/utils/LetterOfCredit.json'
 import Link from 'next/link';
@@ -45,7 +43,6 @@ const CreateLC = () => {
     const [data, setData] = useState<LcData | null>(null)
     const { showToast } = useToast()
     //ethers state
-    const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
     const [loading, setLoading] = useState(false);
     const [walletAddress, setWalletAddress] = useState('');
     const [isConnected, setIsConnected] = useState(false)
@@ -53,17 +50,8 @@ const CreateLC = () => {
     const [blocqId, setBlocqId] = useState('')
     const [contractAmount, setContractAmount] = useState('');
     const lcAnchorContext = useLCAnchorContext();
-    if(!lcAnchorContext) return;
+    
 
-
-    const CONTRACT_ADDRESS = "0x3c6Fa322551607a547A1DA8f09DFd3F664F386Bf"
-
-    const USDC_ABI = [
-
-    ] as const;
-
-
-    const USDC_ADDRESS = ""
 
     const {
         register,
@@ -81,6 +69,7 @@ const CreateLC = () => {
             docType: ''
         }
     });
+    if(!lcAnchorContext) return;
 
 
     const createLC = async (formData: LcFormData) => {
@@ -94,12 +83,6 @@ const CreateLC = () => {
     };
 
 
-
-    const disconnectWallet = () => {
-        setSigner(null);
-        setWalletAddress('');
-        setIsConnected(false)
-    };
 
 
 

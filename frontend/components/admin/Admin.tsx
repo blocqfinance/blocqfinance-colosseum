@@ -10,7 +10,6 @@ import { fetchLC } from '@/libs/api/collections/seller'
 import Backdrop from '../backdrop/Backdrop'
 import Otp from '../OtpModal/Otp'
 import { useToast } from '../toast/ToastContext'
-import Wallet from '../Wallet/Admin'
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import SafeWalletButton from '@/solana/safe-wallet'
@@ -48,7 +47,7 @@ const Admin = () => {
 
     const { publicKey } = useWallet();
     const lcAnchorContext = useLCAnchorContext();
-    if (!lcAnchorContext) return;
+ 
 
     useEffect(() => {
         setResponse(data?.data)
@@ -56,8 +55,14 @@ const Admin = () => {
         const info = data?.data
     }, [data, error]);
 
+
+
     // trigger admin release
     const triggerAdminRelease = useCallback(() => {
+        if (!lcAnchorContext) {
+            return;
+        }
+
         (async function () {
             //make call to solana program
             const isReleased = await releaseCall(lcAnchorContext,response?.blocqId, response?.buyerWalletAddress, response?.sellerWalletAddress)
@@ -100,9 +105,6 @@ const Admin = () => {
 
     return (
         <>
-            {showModal && <Backdrop>
-                <Wallet paramId={id} blocqId={response?.blocqId} id={response?.lcId} />
-            </Backdrop>}
             <div className={styles.lcm}>
                 {/* <Header /> */}
                 <SafeWalletButton></SafeWalletButton>
