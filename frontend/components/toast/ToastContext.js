@@ -56,7 +56,7 @@ export const ToastProvider = ({ children }) => {
             <div>
               {toast?.variant && (
                 <Image
-                  src={`/toast/${toast?.variant}-circled-mark.svg`}
+                  src={`/toast/${toast?.variant}.svg`}
                   width={40}
                   height={40}
                   alt="icon"
@@ -66,7 +66,7 @@ export const ToastProvider = ({ children }) => {
             <div className={styles.message}>{toast?.message}</div>
           </div>
           <div className={styles.top_right} onClick={hideToast}>
-            <Image src={`/close-toast.svg`} width={24} height={24} alt="" />
+            <Image src={`/close-toast.svg`} width={28} height={28} alt="" />
           </div>
         </div>
       </div>
