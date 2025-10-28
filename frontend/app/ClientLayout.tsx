@@ -6,9 +6,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   usePreventMobileView();
   return (
     <div>
-      <ToastProvider>
         {children}
-      </ToastProvider>
     </div>
   );
 }
