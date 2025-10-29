@@ -3,7 +3,7 @@ use anchor_spl::{
 	associated_token, associated_token::AssociatedToken,
 	token::{self, Mint, TokenAccount, Token, TransferChecked}
 };
-pub const USDC_MINT: Pubkey = pubkey!("AN9roykAcQMHj7kDtdvWRvMUGNYaRmy8kz5SeX2bTuMt");
+pub const USDC_MINT: Pubkey = pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
 declare_id!("5H5Az3WbtrW52ZJdjvsgY1Gnzaorvsp1AFpf4oMz3W1S");
 
 #[program]
