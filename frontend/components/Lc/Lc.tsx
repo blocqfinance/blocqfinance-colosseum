@@ -111,17 +111,17 @@ const Lc = () => {
                             <p>{singleLcData?.contractAddress}</p>
                         </div>
 
-                        <div className={styles.actions}>
-                            <div>
+                         <div className={styles.actions}>
+                            {/* <div>
                                 <ReactSVG src='/apps-line.svg' />
                                 <h4>Quick Actions</h4>
-                            </div>
+                            </div> */}
 
-                            <div className={styles.actions__main}>
+                            {/* <div className={styles.actions__main}>
                                 <button className={styles.release}>Activate Refund</button>
                                 <button className={styles.contact}>Contact Seller</button>
                                 <button className={styles.report}>Generate Report</button>
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className={styles.actions}>
@@ -132,13 +132,13 @@ const Lc = () => {
 
                             <div className={styles.actions__view}>
                                 <button className={styles.address}>{singleLcData?.contractAddress}</button>
-                                <button 
+                                {/* <button 
                                     onClick={() => window.open(`https://sepolia.basescan.org/address/${singleLcData?.contractAddress}`, '_blank')} 
                                     className={styles.view}
                                 >
                                     <ReactSVG src='/eye-line.svg' />
                                     View on Explorer
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     </div>
